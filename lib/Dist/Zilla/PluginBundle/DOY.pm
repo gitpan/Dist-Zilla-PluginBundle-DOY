@@ -1,6 +1,6 @@
 package Dist::Zilla::PluginBundle::DOY;
 BEGIN {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.01';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.02';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -65,6 +65,7 @@ sub configure {
         'MetaConfig',
         'MetaJSON',
         ['NextRelease' => { format => '%-5v %{yyyy-MM-dd}d' }],
+        'CheckChangesHasContent',
         'PkgVersion',
         'PodCoverageTests',
         'PodSyntaxTests',
@@ -74,11 +75,10 @@ sub configure {
         ['Repository' => { git_remote => $self->github_url, github_http => 0 }],
         ['Git::Check' => { allow_dirty => '' }],
         ['Git::Tag'   => { tag_format => '%v', tag_message => '' }],
-        ['BumpVersionFromGit' => { version_regexp => '\d+\.\d+', first_version => '0.01'}],
-        'PodWeaver',
+        ['BumpVersionFromGit' => { version_regexp => '^(\d+\.\d+)$', first_version => '0.01'}],
     );
 
-    $self->add_plugins('TaskWeaver') if $self->is_task;
+    $self->add_plugins($self->is_task ? 'TaskWeaver' : 'PodWeaver');
 }
 
 
@@ -96,7 +96,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
@@ -115,6 +115,7 @@ My plugin bundle. Roughly equivalent to:
 
     [NextRelease]
     format = %-5v %{yyyy-MM-dd}d
+    [CheckChangesHasContent]
 
     [PkgVersion]
 
@@ -134,7 +135,7 @@ My plugin bundle. Roughly equivalent to:
     tag_format = %v
     tag_message =
     [BumpVersionFromGit]
-    version_regexp = \d+\.\d+
+    version_regexp = ^(\d+\.\d+)$
     first_version = 0.01
 
     [PodWeaver]

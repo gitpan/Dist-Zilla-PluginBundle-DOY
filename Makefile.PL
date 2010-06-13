@@ -21,6 +21,7 @@ my %WriteMakefileArgs = (
   'NAME' => 'Dist::Zilla::PluginBundle::DOY',
   'PREREQ_PM' => {
     'Dist::Zilla::Plugin::BumpVersionFromGit' => '0',
+    'Dist::Zilla::Plugin::CheckChangesHasContent' => '0',
     'Dist::Zilla::Plugin::CompileTests' => '0',
     'Dist::Zilla::Plugin::EOLTests' => '0',
     'Dist::Zilla::Plugin::Git' => '0',
@@ -28,7 +29,7 @@ my %WriteMakefileArgs = (
     'Dist::Zilla::Plugin::PodWeaver' => '0',
     'Dist::Zilla::Plugin::Repository' => '0.12'
   },
-  'VERSION' => '0.01',
+  'VERSION' => '0.02',
   'test' => {
     'TESTS' => 't/*.t'
   }

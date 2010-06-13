@@ -22,6 +22,7 @@
       "runtime" : {
          "requires" : {
             "Dist::Zilla::Plugin::BumpVersionFromGit" : 0,
+            "Dist::Zilla::Plugin::CheckChangesHasContent" : 0,
             "Dist::Zilla::Plugin::CompileTests" : 0,
             "Dist::Zilla::Plugin::EOLTests" : 0,
             "Dist::Zilla::Plugin::Git" : 0,
@@ -38,7 +39,7 @@
          "url" : "git://github.com/doy/dist-zilla-pluginbundle-doy.git"
       }
    },
-   "version" : "0.01",
+   "version" : "0.02",
    "x_Dist_Zilla" : {
       "plugins" : [
          {
@@ -125,6 +126,11 @@
             "class" : "Dist::Zilla::Plugin::NextRelease",
             "name" : "@DOY/NextRelease",
             "version" : "4.101640"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::CheckChangesHasContent",
+            "name" : "@DOY/CheckChangesHasContent",
+            "version" : "0.003"
          },
          {
             "class" : "Dist::Zilla::Plugin::PkgVersion",
