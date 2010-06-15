@@ -1,5 +1,8 @@
 Revision history for Dist-Zilla-PluginBundle-DOY
 
+0.03  2010-06-15
+      - allow dist.ini configuration of the included plugins
+
 0.02  2010-06-13
       - a few small fixes
       - add CheckChangesHasContent

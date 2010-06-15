@@ -29,7 +29,7 @@ my %WriteMakefileArgs = (
     'Dist::Zilla::Plugin::PodWeaver' => '0',
     'Dist::Zilla::Plugin::Repository' => '0.12'
   },
-  'VERSION' => '0.02',
+  'VERSION' => '0.03',
   'test' => {
     'TESTS' => 't/*.t'
   }

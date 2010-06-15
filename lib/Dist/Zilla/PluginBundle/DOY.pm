@@ -1,6 +1,6 @@
 package Dist::Zilla::PluginBundle::DOY;
 BEGIN {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.02';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.03';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -41,6 +41,65 @@ has github_url => (
     },
 );
 
+has extra_plugins => (
+    is       => 'ro',
+    isa      => 'ArrayRef[Str]',
+    init_arg => undef,
+    lazy     => 1,
+    default  => sub {
+        my $self = shift;
+        [
+            'MetaConfig',
+            'MetaJSON',
+            'NextRelease',
+            'CheckChangesHasContent',
+            'PkgVersion',
+            'PodCoverageTests',
+            'PodSyntaxTests',
+            'NoTabsTests',
+            'EOLTests',
+            'CompileTests',
+            'Repository',
+            'Git::Check',
+            'Git::Tag',
+            'BumpVersionFromGit',
+            $self->is_task ? 'TaskWeaver' : 'PodWeaver',
+        ]
+    },
+);
+
+has plugin_options => (
+    is       => 'ro',
+    isa      => 'HashRef[HashRef[Str]]',
+    init_arg => undef,
+    lazy     => 1,
+    default  => sub {
+        my $self = shift;
+        my %opts = (
+            'NextRelease'        => { format => '%-5v %{yyyy-MM-dd}d' },
+            'Repository'         => {
+                git_remote  => $self->github_url,
+                github_http => 0
+            },
+            'Git::Check'         => { allow_dirty => '' },
+            'Git::Tag'           => { tag_format => '%v', tag_message => '' },
+            'BumpVersionFromGit' => {
+                version_regexp => '^(\d+\.\d+)$',
+                first_version  => '0.01'
+            },
+        );
+
+        for my $option (keys %{ $self->payload }) {
+            next unless $option =~ /^([A-Z][^_]*)_(.+)$/;
+            my ($plugin, $plugin_option) = ($1, $2);
+            $opts{$plugin} ||= {};
+            $opts{$plugin}->{$plugin_option} = $self->payload->{$option};
+        }
+
+        return \%opts;
+    },
+);
+
 around BUILDARGS => sub {
     my $orig = shift;
     my $class = shift;
@@ -62,23 +121,9 @@ sub configure {
     }
 
     $self->add_plugins(
-        'MetaConfig',
-        'MetaJSON',
-        ['NextRelease' => { format => '%-5v %{yyyy-MM-dd}d' }],
-        'CheckChangesHasContent',
-        'PkgVersion',
-        'PodCoverageTests',
-        'PodSyntaxTests',
-        'NoTabsTests',
-        'EOLTests',
-        'CompileTests',
-        ['Repository' => { git_remote => $self->github_url, github_http => 0 }],
-        ['Git::Check' => { allow_dirty => '' }],
-        ['Git::Tag'   => { tag_format => '%v', tag_message => '' }],
-        ['BumpVersionFromGit' => { version_regexp => '^(\d+\.\d+)$', first_version => '0.01'}],
+        map { [ $_ => ($self->plugin_options->{$_} || {}) ] }
+            @{ $self->extra_plugins },
     );
-
-    $self->add_plugins($self->is_task ? 'TaskWeaver' : 'PodWeaver');
 }
 
 
@@ -96,7 +141,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
