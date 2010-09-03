@@ -1,6 +1,6 @@
 package Dist::Zilla::PluginBundle::DOY;
 BEGIN {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.03';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.04';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -41,29 +41,44 @@ has github_url => (
     },
 );
 
-has extra_plugins => (
-    is       => 'ro',
-    isa      => 'ArrayRef[Str]',
-    init_arg => undef,
-    lazy     => 1,
-    default  => sub {
+has _plugins => (
+    is      => 'ro',
+    isa     => 'ArrayRef[Str]',
+    lazy    => 1,
+    default => sub {
         my $self = shift;
         [
-            'MetaConfig',
-            'MetaJSON',
-            'NextRelease',
-            'CheckChangesHasContent',
-            'PkgVersion',
-            'PodCoverageTests',
-            'PodSyntaxTests',
-            'NoTabsTests',
-            'EOLTests',
-            'CompileTests',
-            'Repository',
-            'Git::Check',
-            'Git::Tag',
-            'BumpVersionFromGit',
-            $self->is_task ? 'TaskWeaver' : 'PodWeaver',
+            qw(
+                GatherDir
+                PruneCruft
+                ManifestSkip
+                MetaYAML
+                License
+                Readme
+                ExtraTests
+                ExecDir
+                ShareDir
+                MakeMaker
+                Manifest
+                TestRelease
+                ConfirmRelease
+                MetaConfig
+                MetaJSON
+                NextRelease
+                CheckChangesHasContent
+                PkgVersion
+                PodCoverageTests
+                PodSyntaxTests
+                NoTabsTests
+                EOLTests
+                CompileTests
+                Repository
+                Git::Check
+                Git::Tag
+                BumpVersionFromGit
+            ),
+            ($self->is_task      ? 'TaskWeaver'  : 'PodWeaver'),
+            ($self->is_test_dist ? 'FakeRelease' : 'UploadToCPAN'),
         ]
     },
 );
@@ -110,19 +125,9 @@ around BUILDARGS => sub {
 sub configure {
     my $self = shift;
 
-    if ($self->is_test_dist) {
-        $self->add_bundle(
-            '@Filter' => { bundle => '@Basic', remove => ['UploadToCPAN'] }
-        );
-        $self->add_plugins('FakeRelease');
-    }
-    else {
-        $self->add_bundle('@Basic');
-    }
-
     $self->add_plugins(
         map { [ $_ => ($self->plugin_options->{$_} || {}) ] }
-            @{ $self->extra_plugins },
+            @{ $self->_plugins },
     );
 }
 
@@ -141,7 +146,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 
@@ -239,7 +244,7 @@ L<http://search.cpan.org/dist/Dist-Zilla-PluginBundle-DOY>
 
 =head1 AUTHOR
 
-  Jesse Luehrs <doy at tozt dot net>
+Jesse Luehrs <doy at tozt dot net>
 
 =head1 COPYRIGHT AND LICENSE
 
