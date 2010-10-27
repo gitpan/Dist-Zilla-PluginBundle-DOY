@@ -1,6 +1,6 @@
 package Dist::Zilla::PluginBundle::DOY;
 BEGIN {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.04';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.05';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -13,6 +13,11 @@ has dist => (
     is       => 'ro',
     isa      => 'Str',
     required => 1,
+);
+
+has awesome => (
+    is  => 'ro',
+    isa => 'Str',
 );
 
 has is_task => (
@@ -58,7 +63,9 @@ has _plugins => (
                 ExtraTests
                 ExecDir
                 ShareDir
-                MakeMaker
+            ),
+            ($self->awesome ? $self->awesome : 'MakeMaker'),
+            qw(
                 Manifest
                 TestRelease
                 ConfirmRelease
@@ -146,7 +153,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 

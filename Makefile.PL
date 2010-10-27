@@ -25,11 +25,12 @@ my %WriteMakefileArgs = (
     'Dist::Zilla::Plugin::CompileTests' => '0',
     'Dist::Zilla::Plugin::EOLTests' => '0',
     'Dist::Zilla::Plugin::Git' => '0',
+    'Dist::Zilla::Plugin::MakeMaker::Awesome' => '0',
     'Dist::Zilla::Plugin::NoTabsTests' => '0',
     'Dist::Zilla::Plugin::PodWeaver' => '0',
     'Dist::Zilla::Plugin::Repository' => '0.12'
   },
-  'VERSION' => '0.04',
+  'VERSION' => '0.05',
   'test' => {
     'TESTS' => 't/*.t'
   }
