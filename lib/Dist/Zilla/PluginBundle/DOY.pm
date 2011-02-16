@@ -1,9 +1,11 @@
 package Dist::Zilla::PluginBundle::DOY;
 BEGIN {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.05';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.06';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
+
+use List::MoreUtils qw(any);
 
 use Dist::Zilla;
 with 'Dist::Zilla::Role::PluginBundle::Easy';
@@ -31,18 +33,24 @@ has is_test_dist => (
     is      => 'ro',
     isa     => 'Bool',
     lazy    => 1,
-    default => sub { shift->dist =~ /^Foo-/ ? 1 : 0 },
+    default => sub {
+        my $self = shift;
+        return 1 if $ENV{DZIL_FAKE_RELEASE};
+        return $self->dist =~ /^Foo-/ ? 1 : 0
+    },
 );
 
-has github_url => (
+has git_remote => (
     is  => 'ro',
     isa => 'Str',
     lazy => 1,
     default => sub {
         my $self = shift;
-        my $dist = $self->dist;
-        $dist = lc($dist);
-        "git://github.com/doy/$dist.git";
+        return '' unless -d '.git';
+        my @remotes = `git remote`;
+        chomp @remotes;
+        return 'github' if any { $_ eq 'github' } @remotes;
+        return 'origin';
     },
 );
 
@@ -82,7 +90,7 @@ has _plugins => (
                 Repository
                 Git::Check
                 Git::Tag
-                BumpVersionFromGit
+                Git::NextVersion
             ),
             ($self->is_task      ? 'TaskWeaver'  : 'PodWeaver'),
             ($self->is_test_dist ? 'FakeRelease' : 'UploadToCPAN'),
@@ -100,12 +108,11 @@ has plugin_options => (
         my %opts = (
             'NextRelease'        => { format => '%-5v %{yyyy-MM-dd}d' },
             'Repository'         => {
-                git_remote  => $self->github_url,
-                github_http => 0
+                git_remote  => $self->git_remote,
             },
             'Git::Check'         => { allow_dirty => '' },
             'Git::Tag'           => { tag_format => '%v', tag_message => '' },
-            'BumpVersionFromGit' => {
+            'Git::NextVersion' => {
                 version_regexp => '^(\d+\.\d+)$',
                 first_version  => '0.01'
             },
@@ -133,6 +140,13 @@ sub configure {
     my $self = shift;
 
     $self->add_plugins(
+        [ 'Prereqs' => 'TestMoreDoneTesting' => {
+            -phase       => 'test',
+            -type        => 'requires',
+            'Test::More' => '0.88',
+        } ]
+    );
+    $self->add_plugins(
         map { [ $_ => ($self->plugin_options->{$_} || {}) ] }
             @{ $self->_plugins },
     );
@@ -153,7 +167,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 SYNOPSIS
 
@@ -183,15 +197,14 @@ My plugin bundle. Roughly equivalent to:
     [CompileTests]
 
     [Repository]
-    git_remote = git://github.com/doy/${lowercase_dist}
-    github_http = 0
+    git_remote = github ; or origin, if github doesn't exist
 
     [Git::Check]
     allow_dirty =
     [Git::Tag]
     tag_format = %v
     tag_message =
-    [BumpVersionFromGit]
+    [Git::NextVersion]
     version_regexp = ^(\d+\.\d+)$
     first_version = 0.01
 
@@ -255,7 +268,7 @@ Jesse Luehrs <doy at tozt dot net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Jesse Luehrs.
+This software is copyright (c) 2011 by Jesse Luehrs.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
