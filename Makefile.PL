@@ -4,36 +4,36 @@ use warnings;
 
 
 
-use ExtUtils::MakeMaker 6.31;
+use ExtUtils::MakeMaker 6.30;
 
 
 
 my %WriteMakefileArgs = (
-  'ABSTRACT' => 'Dist::Zilla plugins for me',
-  'AUTHOR' => 'Jesse Luehrs <doy at tozt dot net>',
-  'BUILD_REQUIRES' => {
-    'Test::More' => '0.88'
+  "ABSTRACT" => "Dist::Zilla plugins for me",
+  "AUTHOR" => "Jesse Luehrs <doy at tozt dot net>",
+  "BUILD_REQUIRES" => {
+    "Test::More" => "0.88"
   },
-  'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.31'
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30"
   },
-  'DISTNAME' => 'Dist-Zilla-PluginBundle-DOY',
-  'EXE_FILES' => [],
-  'LICENSE' => 'perl',
-  'NAME' => 'Dist::Zilla::PluginBundle::DOY',
-  'PREREQ_PM' => {
-    'Dist::Zilla::Plugin::CheckChangesHasContent' => '0',
-    'Dist::Zilla::Plugin::CompileTests' => '0',
-    'Dist::Zilla::Plugin::EOLTests' => '0',
-    'Dist::Zilla::Plugin::Git' => '1.102810',
-    'Dist::Zilla::Plugin::MakeMaker::Awesome' => '0',
-    'Dist::Zilla::Plugin::NoTabsTests' => '0',
-    'Dist::Zilla::Plugin::PodWeaver' => '0',
-    'Dist::Zilla::Plugin::Repository' => '0.16'
+  "DISTNAME" => "Dist-Zilla-PluginBundle-DOY",
+  "EXE_FILES" => [],
+  "LICENSE" => "perl",
+  "NAME" => "Dist::Zilla::PluginBundle::DOY",
+  "PREREQ_PM" => {
+    "Dist::Zilla::Plugin::CheckChangesHasContent" => 0,
+    "Dist::Zilla::Plugin::EOLTests" => 0,
+    "Dist::Zilla::Plugin::Git" => "1.102810",
+    "Dist::Zilla::Plugin::MakeMaker::Awesome" => 0,
+    "Dist::Zilla::Plugin::Metadata" => 0,
+    "Dist::Zilla::Plugin::NoTabsTests" => 0,
+    "Dist::Zilla::Plugin::PodWeaver" => 0,
+    "Dist::Zilla::Plugin::Test::Compile" => 0
   },
-  'VERSION' => '0.06',
-  'test' => {
-    'TESTS' => 't/*.t'
+  "VERSION" => "0.07",
+  "test" => {
+    "TESTS" => "t/*.t"
   }
 );
 

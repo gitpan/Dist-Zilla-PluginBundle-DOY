@@ -1,6 +1,9 @@
 package Dist::Zilla::PluginBundle::DOY;
 BEGIN {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.06';
+  $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
+}
+{
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.07';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -17,7 +20,107 @@ has dist => (
     required => 1,
 );
 
+has authority => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => 'cpan:DOY',
+);
+
+has github_user => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => 'doy',
+);
+
+has github_name => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub { lc shift->dist },
+);
+
+has repository => (
+    is  => 'ro',
+    isa => 'Str',
+);
+
+for my $attr (qw(repository_type repository_url repository_web)) {
+    has $attr => (
+        is      => 'ro',
+        isa     => 'Maybe[Str]',
+        lazy    => 1,
+        default => sub {
+            my $self = shift;
+            my $data = $self->_repository_data;
+            return unless $data;
+            return $data->{$attr};
+        },
+    );
+}
+
+sub _repository_data {
+    my $self = shift;
+
+    my $host = $self->repository;
+    return unless defined $host;
+
+    die "Unknown repository host $host"
+        unless exists $self->_repository_host_map->{$host};
+
+    return $self->_repository_host_map->{$host};
+}
+
+has _repository_host_map => (
+    is      => 'ro',
+    isa     => 'HashRef[HashRef[Str]]',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return {
+            'github' => {
+                repository_type => 'git',
+                repository_url  => sprintf('git://github.com/%s/%s.git', $self->github_user, $self->github_name),
+                repository_web  => sprintf('https://github.com/%s/%s', $self->github_user, $self->github_name),
+            },
+            'gitmo' => {
+                repository_type => 'git',
+                repository_url  => sprintf('git://git.moose.perl.org/%s.git', $self->dist),
+                repository_web  => sprintf('http://git.shadowcat.co.uk/gitweb/gitweb.cgi?p=gitmo/%s.git;a=summary', $self->dist),
+            },
+        }
+    },
+);
+
+has bugtracker_web => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub {
+        sprintf('http://rt.cpan.org/Public/Dist/Display.html?Name=%s',
+                shift->dist);
+    },
+);
+
+has bugtracker_mailto => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub { sprintf('bug-%s@rt.cpan.org', lc shift->dist); },
+);
+
+has homepage => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub { sprintf('http://metacpan.org/release/%s', shift->dist) },
+);
+
 has awesome => (
+    is  => 'ro',
+    isa => 'Str',
+);
+
+has dynamic_config => (
     is  => 'ro',
     isa => 'Str',
 );
@@ -43,15 +146,6 @@ has is_test_dist => (
 has git_remote => (
     is  => 'ro',
     isa => 'Str',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        return '' unless -d '.git';
-        my @remotes = `git remote`;
-        chomp @remotes;
-        return 'github' if any { $_ eq 'github' } @remotes;
-        return 'origin';
-    },
 );
 
 has _plugins => (
@@ -82,13 +176,16 @@ has _plugins => (
                 NextRelease
                 CheckChangesHasContent
                 PkgVersion
+                Authority
                 PodCoverageTests
                 PodSyntaxTests
                 NoTabsTests
                 EOLTests
-                CompileTests
-                Repository
+                Test::Compile
+                Metadata
+                MetaResources
                 Git::Check
+                Git::Commit
                 Git::Tag
                 Git::NextVersion
             ),
@@ -107,16 +204,33 @@ has plugin_options => (
         my $self = shift;
         my %opts = (
             'NextRelease'        => { format => '%-5v %{yyyy-MM-dd}d' },
-            'Repository'         => {
-                git_remote  => $self->git_remote,
-            },
+            'Authority'          => { authority => $self->authority },
             'Git::Check'         => { allow_dirty => '' },
             'Git::Tag'           => { tag_format => '%v', tag_message => '' },
             'Git::NextVersion' => {
                 version_regexp => '^(\d+\.\d+)$',
                 first_version  => '0.01'
             },
+            'Git::Commit' => {
+                commit_msg => 'changelog',
+            },
         );
+
+        $opts{Metadata} = {
+            dynamic_config => 1,
+        } if $self->dynamic_config;
+
+        for my $metaresource (qw(repository.type repository.url repository.web bugtracker.web bugtracker.mailto homepage)) {
+            (my $method = $metaresource) =~ s/\./_/g;
+            my $value = $self->$method;
+            if (!$value) {
+                warn "*** resources.$metaresource is not configured! This needs to be fixed! ***";
+                next;
+            }
+            $opts{MetaResources}{$metaresource} = $value;
+        }
+        delete $opts{MetaResources}{'repository.type'}
+            unless exists $opts{MetaResources}{'repository.url'};
 
         for my $option (keys %{ $self->payload }) {
             next unless $option =~ /^([A-Z][^_]*)_(.+)$/;
@@ -167,19 +281,38 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 SYNOPSIS
 
   # dist.ini
   [@DOY]
   dist = Dist-Zilla-PluginBundle-DOY
+  repository = github
 
 =head1 DESCRIPTION
 
 My plugin bundle. Roughly equivalent to:
 
-    [@Basic]
+    [Prereqs / TestMoreDoneTesting]
+    -phase = test
+    -type = requires
+    Test::More = 0.88
+
+    [GatherDir]
+    [PruneCruft]
+    [ManifestSkip]
+    [MetaYAML]
+    [License]
+    [Readme]
+    [ExtraTests]
+    [ExecDir]
+    [ShareDir]
+    [MakeMaker]
+    [Manifest]
+
+    [TestRelease]
+    [ConfirmRelease]
 
     [MetaConfig]
     [MetaJSON]
@@ -189,18 +322,22 @@ My plugin bundle. Roughly equivalent to:
     [CheckChangesHasContent]
 
     [PkgVersion]
+    [Authority]
+    authority = cpan:DOY
 
     [PodCoverageTests]
     [PodSyntaxTests]
     [NoTabsTests]
     [EOLTests]
-    [CompileTests]
+    [Test::Compile]
 
-    [Repository]
-    git_remote = github ; or origin, if github doesn't exist
+    [MetaResources]
+    ; autoconfigured, based on the value of 'repository'
 
     [Git::Check]
     allow_dirty =
+    [Git::Commit]
+    commit_msg = changelog
     [Git::Tag]
     tag_format = %v
     tag_message =
@@ -210,7 +347,7 @@ My plugin bundle. Roughly equivalent to:
 
     [PodWeaver]
 
-=for Pod::Coverage   configure
+    [UploadToCPAN]
 
 =head1 BUGS
 
@@ -222,17 +359,9 @@ L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dist-Zilla-PluginBundle-DOY>.
 
 =head1 SEE ALSO
 
-=over 4
-
-=item *
-
 L<Dist::Zilla>
 
-=item *
-
 L<Task::BeLike::DOY>
-
-=back
 
 =head1 SUPPORT
 
@@ -262,13 +391,15 @@ L<http://search.cpan.org/dist/Dist-Zilla-PluginBundle-DOY>
 
 =back
 
+=for Pod::Coverage   configure
+
 =head1 AUTHOR
 
 Jesse Luehrs <doy at tozt dot net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Jesse Luehrs.
+This software is copyright (c) 2012 by Jesse Luehrs.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
