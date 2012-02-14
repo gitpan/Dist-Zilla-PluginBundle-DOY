@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
 }
 {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.07';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.08';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -281,7 +281,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 

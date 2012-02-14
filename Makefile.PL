@@ -22,6 +22,7 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "NAME" => "Dist::Zilla::PluginBundle::DOY",
   "PREREQ_PM" => {
+    "Dist::Zilla::Plugin::Authority" => 0,
     "Dist::Zilla::Plugin::CheckChangesHasContent" => 0,
     "Dist::Zilla::Plugin::EOLTests" => 0,
     "Dist::Zilla::Plugin::Git" => "1.102810",
@@ -29,9 +30,10 @@ my %WriteMakefileArgs = (
     "Dist::Zilla::Plugin::Metadata" => 0,
     "Dist::Zilla::Plugin::NoTabsTests" => 0,
     "Dist::Zilla::Plugin::PodWeaver" => 0,
+    "Dist::Zilla::Plugin::TaskWeaver" => 0,
     "Dist::Zilla::Plugin::Test::Compile" => 0
   },
-  "VERSION" => "0.07",
+  "VERSION" => "0.08",
   "test" => {
     "TESTS" => "t/*.t"
   }
