@@ -24,6 +24,7 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "Dist::Zilla::Plugin::Authority" => 0,
     "Dist::Zilla::Plugin::CheckChangesHasContent" => 0,
+    "Dist::Zilla::Plugin::CheckExtraTests" => "0.006",
     "Dist::Zilla::Plugin::EOLTests" => 0,
     "Dist::Zilla::Plugin::Git" => "1.102810",
     "Dist::Zilla::Plugin::MakeMaker::Awesome" => 0,
@@ -33,7 +34,7 @@ my %WriteMakefileArgs = (
     "Dist::Zilla::Plugin::TaskWeaver" => 0,
     "Dist::Zilla::Plugin::Test::Compile" => 0
   },
-  "VERSION" => "0.08",
+  "VERSION" => "0.09",
   "test" => {
     "TESTS" => "t/*.t"
   }

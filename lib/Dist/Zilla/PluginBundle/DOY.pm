@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
 }
 {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.08';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.09';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -143,11 +143,6 @@ has is_test_dist => (
     },
 );
 
-has git_remote => (
-    is  => 'ro',
-    isa => 'Str',
-);
-
 has _plugins => (
     is      => 'ro',
     isa     => 'ArrayRef[Str]',
@@ -162,7 +157,7 @@ has _plugins => (
                 MetaYAML
                 License
                 Readme
-                ExtraTests
+                RunExtraTests
                 ExecDir
                 ShareDir
             ),
@@ -281,7 +276,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 SYNOPSIS
 
@@ -305,7 +300,7 @@ My plugin bundle. Roughly equivalent to:
     [MetaYAML]
     [License]
     [Readme]
-    [ExtraTests]
+    [RunExtraTests]
     [ExecDir]
     [ShareDir]
     [MakeMaker]
