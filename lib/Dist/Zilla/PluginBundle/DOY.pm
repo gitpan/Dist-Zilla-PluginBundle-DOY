@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
 }
 {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.09';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.10';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -218,7 +218,7 @@ has plugin_options => (
         for my $metaresource (qw(repository.type repository.url repository.web bugtracker.web bugtracker.mailto homepage)) {
             (my $method = $metaresource) =~ s/\./_/g;
             my $value = $self->$method;
-            if (!$value) {
+            if ($metaresource ne 'bugtracker.mailto' && !$value) {
                 warn "*** resources.$metaresource is not configured! This needs to be fixed! ***";
                 next;
             }
@@ -268,6 +268,7 @@ no Moose;
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -276,7 +277,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
@@ -394,10 +395,9 @@ Jesse Luehrs <doy at tozt dot net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Jesse Luehrs.
+This software is copyright (c) 2013 by Jesse Luehrs.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
