@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
 }
 {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.10';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.11';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -218,8 +218,9 @@ has plugin_options => (
         for my $metaresource (qw(repository.type repository.url repository.web bugtracker.web bugtracker.mailto homepage)) {
             (my $method = $metaresource) =~ s/\./_/g;
             my $value = $self->$method;
-            if ($metaresource ne 'bugtracker.mailto' && !$value) {
-                warn "*** resources.$metaresource is not configured! This needs to be fixed! ***";
+            if (!$value) {
+                warn "*** resources.$metaresource is not configured! This needs to be fixed! ***"
+                    unless $metaresource eq 'bugtracker.mailto';
                 next;
             }
             $opts{MetaResources}{$metaresource} = $value;
@@ -277,7 +278,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SYNOPSIS
 
