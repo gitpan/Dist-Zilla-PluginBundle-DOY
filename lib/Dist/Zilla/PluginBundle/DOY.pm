@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
 }
 {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.11';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.12';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -143,6 +143,12 @@ has is_test_dist => (
     },
 );
 
+has done_testing => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 1,
+);
+
 has _plugins => (
     is      => 'ro',
     isa     => 'ArrayRef[Str]',
@@ -255,7 +261,7 @@ sub configure {
             -type        => 'requires',
             'Test::More' => '0.88',
         } ]
-    );
+    ) if $self->done_testing;
     $self->add_plugins(
         map { [ $_ => ($self->plugin_options->{$_} || {}) ] }
             @{ $self->_plugins },
@@ -278,7 +284,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
