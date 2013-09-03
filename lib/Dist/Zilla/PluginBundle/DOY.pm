@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
 }
 {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.12';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.13';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -91,21 +91,55 @@ has _repository_host_map => (
     },
 );
 
-has bugtracker_web => (
+has bugtracker => (
     is      => 'ro',
     isa     => 'Str',
     lazy    => 1,
-    default => sub {
-        sprintf('http://rt.cpan.org/Public/Dist/Display.html?Name=%s',
-                shift->dist);
-    },
+    default => sub { shift->repository eq 'github' ? 'github' : 'rt' },
 );
 
-has bugtracker_mailto => (
+for my $attr (qw(bugtracker_web bugtracker_mailto)) {
+    has $attr => (
+        is      => 'ro',
+        isa     => 'Maybe[Str]',
+        lazy    => 1,
+        default => sub {
+            my $self = shift;
+            my $data = $self->_bugtracker_data;
+            return unless $data;
+            return $data->{$attr};
+        },
+    );
+}
+
+sub _bugtracker_data {
+    my $self = shift;
+
+    my $host = $self->bugtracker;
+    return unless defined $host;
+
+    die "Unknown bugtracker host $host"
+        unless exists $self->_bugtracker_host_map->{$host};
+
+    return $self->_bugtracker_host_map->{$host};
+}
+
+has _bugtracker_host_map => (
     is      => 'ro',
-    isa     => 'Str',
+    isa     => 'HashRef[HashRef[Str]]',
     lazy    => 1,
-    default => sub { sprintf('bug-%s@rt.cpan.org', lc shift->dist); },
+    default => sub {
+        my $self = shift;
+        return {
+            'github' => {
+                bugtracker_web  => sprintf('https://github.com/%s/%s/issues', $self->github_user, $self->github_name),
+            },
+            'rt' => {
+                bugtracker_web    => sprintf('http://rt.cpan.org/Public/Dist/Display.html?Name=%s', $self->dist),
+                bugtracker_mailto => sprintf('bug-%s@rt.cpan.org', lc $self->dist),
+            },
+        }
+    },
 );
 
 has homepage => (
@@ -189,6 +223,9 @@ has _plugins => (
                 Git::Commit
                 Git::Tag
                 Git::NextVersion
+                AutoPrereqs
+                ContributorsFromGit
+                MetaProvides::Package
             ),
             ($self->is_task      ? 'TaskWeaver'  : 'PodWeaver'),
             ($self->is_test_dist ? 'FakeRelease' : 'UploadToCPAN'),
@@ -284,7 +321,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.12
+version 0.13
 
 =head1 SYNOPSIS
 
@@ -352,6 +389,10 @@ My plugin bundle. Roughly equivalent to:
 
     [UploadToCPAN]
 
+    [AutoPrereqs]
+    [ContributorsFromGit]
+    [MetaProvides::Package]
+
 =head1 BUGS
 
 No known bugs.
@@ -376,21 +417,21 @@ You can also look for information at:
 
 =over 4
 
-=item * AnnoCPAN: Annotated CPAN documentation
+=item * MetaCPAN
 
-L<http://annocpan.org/dist/Dist-Zilla-PluginBundle-DOY>
+L<https://metacpan.org/release/Dist-Zilla-PluginBundle-DOY>
 
-=item * CPAN Ratings
+=item * Github
 
-L<http://cpanratings.perl.org/d/Dist-Zilla-PluginBundle-DOY>
+L<https://github.com/doy/dist-zilla-pluginbundle-doy>
 
 =item * RT: CPAN's request tracker
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dist-Zilla-PluginBundle-DOY>
 
-=item * Search CPAN
+=item * CPAN Ratings
 
-L<http://search.cpan.org/dist/Dist-Zilla-PluginBundle-DOY>
+L<http://cpanratings.perl.org/d/Dist-Zilla-PluginBundle-DOY>
 
 =back
 
@@ -398,13 +439,14 @@ L<http://search.cpan.org/dist/Dist-Zilla-PluginBundle-DOY>
 
 =head1 AUTHOR
 
-Jesse Luehrs <doy at tozt dot net>
+Jesse Luehrs <doy@tozt.net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Jesse Luehrs.
+This software is Copyright (c) 2013 by Jesse Luehrs.
 
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
+This is free software, licensed under:
+
+  The MIT (X11) License
 
 =cut

@@ -1,13 +1,14 @@
 
 
 This archive contains the distribution Dist-Zilla-PluginBundle-DOY,
-version 0.12:
+version 0.13:
 
   Dist::Zilla plugins for me
 
-This software is copyright (c) 2013 by Jesse Luehrs.
+This software is Copyright (c) 2013 by Jesse Luehrs.
 
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
+This is free software, licensed under:
+
+  The MIT (X11) License
 
 
