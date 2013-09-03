@@ -22,7 +22,6 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "Dist::Zilla" => 0,
     "Dist::Zilla::Plugin::Authority" => 0,
-    "Dist::Zilla::Plugin::AutoPrereqs" => 0,
     "Dist::Zilla::Plugin::CheckChangesHasContent" => 0,
     "Dist::Zilla::Plugin::ConfirmRelease" => 0,
     "Dist::Zilla::Plugin::ContributorsFromGit" => 0,
@@ -70,7 +69,7 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.13",
+  "VERSION" => "0.14",
   "test" => {
     "TESTS" => "t/*.t"
   }

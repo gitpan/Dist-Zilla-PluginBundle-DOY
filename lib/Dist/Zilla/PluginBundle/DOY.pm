@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
 }
 {
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.13';
+  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.14';
 }
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
@@ -223,7 +223,6 @@ has _plugins => (
                 Git::Commit
                 Git::Tag
                 Git::NextVersion
-                AutoPrereqs
                 ContributorsFromGit
                 MetaProvides::Package
             ),
@@ -321,7 +320,7 @@ Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.13
+version 0.14
 
 =head1 SYNOPSIS
 
@@ -389,7 +388,6 @@ My plugin bundle. Roughly equivalent to:
 
     [UploadToCPAN]
 
-    [AutoPrereqs]
     [ContributorsFromGit]
     [MetaProvides::Package]
 

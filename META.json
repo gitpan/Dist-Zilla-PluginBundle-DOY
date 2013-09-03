@@ -30,7 +30,6 @@
          "requires" : {
             "Dist::Zilla" : "0",
             "Dist::Zilla::Plugin::Authority" : "0",
-            "Dist::Zilla::Plugin::AutoPrereqs" : "0",
             "Dist::Zilla::Plugin::CheckChangesHasContent" : "0",
             "Dist::Zilla::Plugin::ConfirmRelease" : "0",
             "Dist::Zilla::Plugin::ContributorsFromGit" : "0",
@@ -85,7 +84,7 @@
    "provides" : {
       "Dist::Zilla::PluginBundle::DOY" : {
          "file" : "lib/Dist/Zilla/PluginBundle/DOY.pm",
-         "version" : "0.13"
+         "version" : "0.14"
       }
    },
    "release_status" : "stable",
@@ -100,7 +99,7 @@
          "web" : "https://github.com/doy/dist-zilla-pluginbundle-doy"
       }
    },
-   "version" : "0.13",
+   "version" : "0.14",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.018001"
