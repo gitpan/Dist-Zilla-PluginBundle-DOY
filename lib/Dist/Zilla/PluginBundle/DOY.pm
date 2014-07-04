@@ -2,9 +2,7 @@ package Dist::Zilla::PluginBundle::DOY;
 BEGIN {
   $Dist::Zilla::PluginBundle::DOY::AUTHORITY = 'cpan:DOY';
 }
-{
-  $Dist::Zilla::PluginBundle::DOY::VERSION = '0.14';
-}
+$Dist::Zilla::PluginBundle::DOY::VERSION = '0.15';
 use Moose;
 # ABSTRACT: Dist::Zilla plugins for me
 
@@ -214,7 +212,7 @@ has _plugins => (
                 Authority
                 PodCoverageTests
                 PodSyntaxTests
-                NoTabsTests
+                Test::NoTabs
                 EOLTests
                 Test::Compile
                 Metadata
@@ -314,13 +312,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Dist::Zilla::PluginBundle::DOY - Dist::Zilla plugins for me
 
 =head1 VERSION
 
-version 0.14
+version 0.15
 
 =head1 SYNOPSIS
 
@@ -366,7 +366,7 @@ My plugin bundle. Roughly equivalent to:
 
     [PodCoverageTests]
     [PodSyntaxTests]
-    [NoTabsTests]
+    [Test::NoTabs]
     [EOLTests]
     [Test::Compile]
 
@@ -395,9 +395,8 @@ My plugin bundle. Roughly equivalent to:
 
 No known bugs.
 
-Please report any bugs through RT: email
-C<bug-dist-zilla-pluginbundle-doy at rt.cpan.org>, or browse to
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dist-Zilla-PluginBundle-DOY>.
+Please report any bugs to GitHub Issues at
+L<https://github.com/doy/dist-zilla-pluginbundle-doy/issues>.
 
 =head1 SEE ALSO
 
@@ -441,7 +440,7 @@ Jesse Luehrs <doy@tozt.net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2013 by Jesse Luehrs.
+This software is Copyright (c) 2014 by Jesse Luehrs.
 
 This is free software, licensed under:
 
